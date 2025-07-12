@@ -1,6 +1,9 @@
 package lexer
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 // Regex handler function type
 type regexHandler func(lex *lexer, regex *regexp.Regexp)
@@ -31,6 +34,28 @@ type lexer struct {
 func Tokenize(source string) []Token {
 	lex := createLexer(source)
 
+	// 10 + [5]
+	// Iterate while we sill have tokens
+	for !lex.at_eof() {
+		matched := false
+
+		for _, pattern := range lex.patterns {
+			loc := pattern.regex.FindStringIndex(lex.remainder())
+
+			if loc != nil && loc[0] == 0 {
+				pattern.handler(lex, pattern.regex)
+				matched = true
+				break
+			}
+		}
+
+		// You could extend this to print the location and other things
+		if !matched {
+			panic(fmt.Sprintf("Lexer::Error -> unrecognized token near %s\n", lex.remainder()))
+		}
+	}
+
+	lex.push(NewToken(EOF, "EOF"))
 	return lex.Tokens
 }
 
