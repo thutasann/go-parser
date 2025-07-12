@@ -1,0 +1,18 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+.env
+
+# Build files
+build
+bin
+
+# Database
+.hopper
+.db
+
+# Certificates
+*.crt
+*.key
