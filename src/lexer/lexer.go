@@ -70,11 +70,6 @@ func (lex *lexer) push(token Token) {
 	lex.Tokens = append(lex.Tokens, token)
 }
 
-// Get the character at the current position
-func (lex *lexer) at() byte {
-	return lex.source[lex.pos]
-}
-
 // Check if the current position is at the end of the source string
 func (lex *lexer) at_eof() bool {
 	return lex.pos >= len(lex.source)
@@ -107,6 +102,27 @@ func numberHandler(lex *lexer, regex *regexp.Regexp) {
 	lex.advanceN(len(match))
 }
 
+// String handler for regex patterns
+func stringHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindStringIndex(lex.remainder())
+	stringLiteral := lex.remainder()[match[0]+1 : match[1]-1]
+	lex.push(NewToken(STRING, stringLiteral))
+	lex.advanceN(len(stringLiteral) + 2)
+}
+
+// Symbol handler for regex patterns
+func symbolHandler(lex *lexer, regex *regexp.Regexp) {
+	value := regex.FindString(lex.remainder())
+
+	if kind, exists := reserved_lu[value]; exists {
+		lex.push(NewToken(kind, value))
+	} else {
+		lex.push(NewToken(IDENTIFIER, value))
+	}
+
+	lex.advanceN(len(value))
+}
+
 // Create a new lexer
 func createLexer(source string) *lexer {
 	return &lexer{
@@ -114,7 +130,11 @@ func createLexer(source string) *lexer {
 		source: source,
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
+			{regexp.MustCompile(`[a-zA-Z_][a-zA-Z0-9_]*`), symbolHandler},
 			{regexp.MustCompile(`[0-9]+(\.[0-9]+)?`), numberHandler},
+			{regexp.MustCompile(`"[^"]*"`), stringHandler},
+			{regexp.MustCompile(`\/\/.*`), skipHandler},
+			{regexp.MustCompile(`\s+`), skipHandler},
 			{regexp.MustCompile(`\s+`), skipHandler},
 			{regexp.MustCompile(`\[`), defaultHandler(OPEN_BRACKET, "[")},
 			{regexp.MustCompile(`\]`), defaultHandler(CLOSE_BRACKET, "]")},

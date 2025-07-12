@@ -67,6 +67,24 @@ const (
 	IN
 )
 
+var reserved_lu map[string]TokenKind = map[string]TokenKind{
+	"let":     LET,
+	"const":   CONST,
+	"class":   CLASS,
+	"new":     NEW,
+	"import":  IMPORT,
+	"from":    FROM,
+	"fn":      FN,
+	"if":      IF,
+	"else":    ELSE,
+	"foreach": FOREACH,
+	"while":   WHILE,
+	"for":     FOR,
+	"export":  EXPORT,
+	"typeof":  TYPEOF,
+	"in":      IN,
+}
+
 // Token is a struct that represents a token
 type Token struct {
 	Kind  TokenKind
