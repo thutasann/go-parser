@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/thutasann/go-parser/src/ast"
 	"github.com/thutasann/go-parser/src/lexer"
 )
@@ -45,4 +47,24 @@ func Parse(tokens []lexer.Token) ast.BlockStmt {
 	return ast.BlockStmt{
 		Body: Body,
 	}
+}
+
+// Expect Error
+func (p *parser) expectError(expectedKind lexer.TokenKind, err any) lexer.Token {
+	token := p.currentToken()
+	kind := token.Kind
+
+	if kind != expectedKind {
+		if err == nil {
+			err = fmt.Sprintf("Expected %s but received %s instead\n", lexer.TokenKindString(expectedKind), lexer.TokenKindString(kind))
+		}
+		panic(err)
+	}
+
+	return p.advance()
+}
+
+// Expect fn
+func (p *parser) expect(expectedKind lexer.TokenKind) lexer.Token {
+	return p.expectError(expectedKind, nil)
 }
