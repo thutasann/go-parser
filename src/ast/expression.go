@@ -26,7 +26,8 @@ type SymbolExpr struct {
 	Value string
 }
 
-func (n SymbolExpr) expr() {}
+func (n SymbolExpr) expr() {
+}
 
 // -------------------
 // COMPLEX EXPRESSIONS

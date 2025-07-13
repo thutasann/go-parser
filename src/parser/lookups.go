@@ -31,10 +31,16 @@ type nud_handler func(p *parser) ast.Expr
 // Led handler — parses infix/postfix expressions
 type led_handler func(p *parser, left ast.Expr, bp binding_power) ast.Expr
 
-// Lookup tables for tokens
+// Statement Lookup table for tokens
 type stmt_lookup map[lexer.TokenKind]stmt_handler
+
+// Null Denotation Lookup table for tokens
 type nud_lookup map[lexer.TokenKind]nud_handler
+
+// Left Denotation Lookup table for tokens
 type led_lookup map[lexer.TokenKind]led_handler
+
+// Binding Power Lookup table for tokens
 type bp_lookup map[lexer.TokenKind]binding_power
 
 var (
@@ -78,6 +84,11 @@ func createTokenLookups() {
 	led(lexer.NOT_EQUALS, relational, parse_binary_expr)
 
 	// Additive & Multiplicative
+	led(lexer.PLUS, additive, parse_binary_expr)
+	led(lexer.DASH, additive, parse_binary_expr)
+	led(lexer.STAR, multiplicative, parse_binary_expr)
+	led(lexer.SLASH, multiplicative, parse_binary_expr)
+	led(lexer.PERCENT, multiplicative, parse_binary_expr)
 
 	// Literals & symbols
 	nud(lexer.NUMBER, primary, parse_primary_expr)
