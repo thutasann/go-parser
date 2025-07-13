@@ -2,54 +2,62 @@ package lexer
 
 import "fmt"
 
-// TokenKind is an integer that represents the type of token
+// TokenKind represents the type of token using integer constants.
 type TokenKind int
 
+// List of token kinds (identifiers, symbols, keywords, etc.)
 const (
-	EOF TokenKind = iota
+	EOF TokenKind = iota // End of file/input
+
+	// Literals
 	NUMBER
 	STRING
 	IDENTIFIER
 
-	OPEN_BRACKET
-	CLOSE_BRACKET
-	OPEN_CURLY
-	CLOSE_CURLY
-	OPEN_PAREN
-	CLOSE_PAREN
+	// Brackets and parentheses
+	OPEN_BRACKET  // [
+	CLOSE_BRACKET // ]
+	OPEN_CURLY    // {
+	CLOSE_CURLY   // }
+	OPEN_PAREN    // (
+	CLOSE_PAREN   // )
 
-	ASSIGNMENT
-	EQUALS
-	NOT
-	NOT_EQUALS
+	// Comparison / logic / assignment operators
+	ASSIGNMENT // =
+	EQUALS     // ==
+	NOT        // !
+	NOT_EQUALS // !=
 
-	LESS
-	LESS_EQUALS
-	GREATER
-	GREATER_EQUALS
+	LESS           // <
+	LESS_EQUALS    // <=
+	GREATER        // >
+	GREATER_EQUALS // >=
 
-	OR
-	AND
+	OR  // ||
+	AND // &&
 
-	DOT
-	DOT_DOT
-	SEMI_COLON
-	COLON
-	QUESTION
-	COMMA
+	// Punctuation
+	DOT        // .
+	DOT_DOT    // ..
+	SEMI_COLON // ;
+	COLON      // :
+	QUESTION   // ?
+	COMMA      // ,
 
-	PLUS_PLUS
-	MINUS_MINUS
-	PLUS_EQUALS
-	MINUS_EQUALS
+	// Increment/decrement and compound assignment
+	PLUS_PLUS    // ++
+	MINUS_MINUS  // --
+	PLUS_EQUALS  // +=
+	MINUS_EQUALS // -=
 
-	PLUS
-	DASH
-	SLASH
-	STAR
-	PERCENT
+	// Arithmetic
+	PLUS    // +
+	DASH    // -
+	SLASH   // /
+	STAR    // *
+	PERCENT // %
 
-	// Reserverd Keywords
+	// Keywords
 	LET
 	CONST
 	CLASS
@@ -67,6 +75,7 @@ const (
 	IN
 )
 
+// reserved_lu maps keywords (like "let", "if") to their corresponding TokenKind.
 var reserved_lu map[string]TokenKind = map[string]TokenKind{
 	"let":     LET,
 	"const":   CONST,
