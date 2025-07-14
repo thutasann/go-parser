@@ -20,3 +20,8 @@ func parse_stmt(p *parser) ast.Stmt {
 		Expression: expression,
 	}
 }
+
+// Parse Variable Declaration Statement
+func parse_var_del_stmt(p *parser) ast.Stmt {
+	return ast.VarDeclStmt{}
+}
