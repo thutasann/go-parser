@@ -57,7 +57,7 @@ func led(kind lexer.TokenKind, bp binding_power, led_fn led_handler) {
 }
 
 // Register a null denotation (literal/prefix) handler
-func nud(kind lexer.TokenKind, bp binding_power, nud_fn nud_handler) {
+func nud(kind lexer.TokenKind, _ binding_power, nud_fn nud_handler) {
 	bp_lu[kind] = primary
 	nud_lu[kind] = nud_fn
 }
@@ -94,4 +94,8 @@ func createTokenLookups() {
 	nud(lexer.NUMBER, primary, parse_primary_expr)
 	nud(lexer.STRING, primary, parse_primary_expr)
 	nud(lexer.IDENTIFIER, primary, parse_primary_expr)
+
+	// Statements
+	stmt(lexer.CONST, parse_var_del_stmt)
+	stmt(lexer.LET, parse_var_del_stmt)
 }

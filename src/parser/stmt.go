@@ -23,5 +23,15 @@ func parse_stmt(p *parser) ast.Stmt {
 
 // Parse Variable Declaration Statement
 func parse_var_del_stmt(p *parser) ast.Stmt {
-	return ast.VarDeclStmt{}
+	isConstant := p.advance().Kind == lexer.CONST
+	varName := p.expectError(lexer.IDENTIFIER, "Inside Variable Declaration expected to find variable name").Value
+	p.expect(lexer.ASSIGNMENT)
+	assignedValue := parse_expr(p, assignment)
+	p.expect(lexer.SEMI_COLON)
+
+	return ast.VarDeclStmt{
+		IsConstant:    isConstant,
+		VariableName:  varName,
+		AssignedValue: assignedValue,
+	}
 }

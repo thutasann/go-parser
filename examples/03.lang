@@ -4,4 +4,4 @@ let bar = foo * 10;
 const isGrater = foo > 10;
 
 // add support for types
-let numbers: []number;
+// let numbers: []number;
