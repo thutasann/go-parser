@@ -19,7 +19,7 @@ type VarDeclStmt struct {
 	VariableName  string
 	IsConstant    bool
 	AssignedValue Expr
-	// ExplicitType Type
+	ExplicitType  Type
 }
 
 func (n VarDeclStmt) stmt() {}

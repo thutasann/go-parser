@@ -8,7 +8,30 @@ import (
 	"github.com/thutasann/go-parser/src/lexer"
 )
 
-// Parse Primary Expression
+func parse_expr(p *parser, bp binding_power) ast.Expr {
+	tokenKind := p.currentTokenKind()
+	nud_fn, exists := nud_lu[tokenKind]
+
+	if !exists {
+		panic(fmt.Sprintf("NUD HANDLER EXPECTED FOR TOKEN %s\n", lexer.TokenKindString(tokenKind)))
+	}
+
+	left := nud_fn(p)
+	for bp_lu[p.currentTokenKind()] > bp {
+		tokenKind = p.currentTokenKind()
+		led_fn, exists := led_lu[tokenKind]
+
+		if !exists {
+			panic(fmt.Sprintf("LED HANDLER EXPECTED FOR TOKEN %s\n", lexer.TokenKindString(tokenKind)))
+		}
+
+		left = led_fn(p, left, bp_lu[p.currentTokenKind()])
+
+	}
+
+	return left
+}
+
 func parse_primary_expr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
@@ -25,11 +48,10 @@ func parse_primary_expr(p *parser) ast.Expr {
 			Value: p.advance().Value,
 		}
 	default:
-		panic(fmt.Sprintf("cannot create primary_expression from %s\n", lexer.TokenKindString(p.currentTokenKind())))
+		panic(fmt.Sprintf("Cannot create primary_expression from %s\n", lexer.TokenKindString(p.currentTokenKind())))
 	}
 }
 
-// Parse Binary Expression
 func parse_binary_expr(p *parser, left ast.Expr, bp binding_power) ast.Expr {
 	operatorToken := p.advance()
 	right := parse_expr(p, bp)
@@ -41,28 +63,30 @@ func parse_binary_expr(p *parser, left ast.Expr, bp binding_power) ast.Expr {
 	}
 }
 
-// Parse Expression
-// -  10 + 6 * 2
-func parse_expr(p *parser, bp binding_power) ast.Expr {
-	// First parse the NUD
-	tokenKind := p.currentTokenKind()
-	nud_fn, exists := nud_lu[tokenKind]
+func parse_prefix_expr(p *parser) ast.Expr {
+	operatorToken := p.advance()
+	rhs := parse_expr(p, default_bp)
 
-	if !exists {
-		panic(fmt.Sprintf("NUL HANDLER EXPECTED FOR TOKEN %s\n", lexer.TokenKindString(tokenKind)))
+	return ast.PrefixExpr{
+		Operator:  operatorToken,
+		RightExpr: rhs,
 	}
+}
 
-	left := nud_fn(p)
+func parse_grouping_expr(p *parser) ast.Expr {
+	p.advance() // advance past grouping start
+	expr := parse_expr(p, default_bp)
+	p.expect(lexer.CLOSE_PAREN) // advance past close
+	return expr
+}
 
-	for bp_lu[p.currentTokenKind()] > bp {
-		tokenKind = p.currentTokenKind()
-		led_fn, exists := led_lu[tokenKind]
-		if !exists {
-			panic(fmt.Sprintf("LED HANDLER EXPECTED FOR TOKEN %s\n", lexer.TokenKindString(tokenKind)))
-		}
+func parse_assignment_expr(p *parser, left ast.Expr, bp binding_power) ast.Expr {
+	operatorToken := p.advance()
+	rhs := parse_expr(p, bp)
 
-		left = led_fn(p, left, bp)
+	return ast.AssignmentExpr{
+		Operator: operatorToken,
+		Value:    rhs,
+		Assigne:  left,
 	}
-
-	return left
 }

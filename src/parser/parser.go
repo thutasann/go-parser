@@ -21,6 +21,7 @@ type parser struct {
 // - Initializes pos to 0.
 func createParser(tokens []lexer.Token) *parser {
 	createTokenLookups()
+	createTokenTypeLookups()
 	return &parser{
 		tokens: tokens,
 		pos:    0,
